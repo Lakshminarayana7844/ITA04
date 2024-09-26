@@ -1,0 +1,69 @@
+# Load the dataset
+data("USArrests")
+
+# (i) Explore the Summary of the Dataset
+# a. Summary of the dataset: features, types, statistical summaries
+str(USArrests)          # Structure of the dataset
+summary(USArrests)      # Summary statistics of the dataset
+nrow(USArrests)         # Number of records
+ncol(USArrests)         # Number of features
+
+# b. State with the largest total number of rape
+state_max_rape <- rownames(USArrests)[which.max(USArrests$Rape)]
+cat("State with the highest rape arrests:", state_max_rape, "\n")
+
+# c. State with the maximum and minimum crime rates for murder
+state_max_murder <- rownames(USArrests)[which.max(USArrests$Murder)]
+state_min_murder <- rownames(USArrests)[which.min(USArrests$Murder)]
+cat("State with the highest murder arrests:", state_max_murder, "\n")
+cat("State with the lowest murder arrests:", state_min_murder, "\n")
+
+# (ii) Further Exploration
+# a. Find the correlation among the features
+correlation_matrix <- cor(USArrests)
+print("Correlation Matrix:")
+print(correlation_matrix)
+
+# b. States with assault arrests more than the median of the country
+median_assault <- median(USArrests$Assault)
+states_above_median_assault <- rownames(USArrests)[USArrests$Assault > median_assault]
+cat("States with assault arrests greater than the median:\n")
+print(states_above_median_assault)
+
+# c. States in the bottom 25% for murder arrests
+quantile_25_murder <- quantile(USArrests$Murder, 0.25)
+states_bottom_25_murder <- rownames(USArrests)[USArrests$Murder < quantile_25_murder]
+cat("States in the bottom 25% for murder arrests:\n")
+print(states_bottom_25_murder)
+
+# (iii) Visualization
+# a. Histogram and density plot of murder arrests
+par(mfrow=c(1,2))  # Create a 1x2 plotting area
+
+# Histogram of Murder Arrests
+hist(USArrests$Murder, main = "Histogram of Murder Arrests", xlab = "Murder Arrests", col = "lightblue", border = "black")
+
+# Density plot of Murder Arrests
+plot(density(USArrests$Murder), main = "Density Plot of Murder Arrests", xlab = "Murder Arrests", col = "darkgreen")
+
+# b. Scatter plot of Murder vs Urban Population, with Assault as color (without ggplot)
+# Set color intensity for Assault
+color_gradient <- colorRampPalette(c("blue", "red"))(100)
+color_assign <- cut(USArrests$Assault, breaks = 100, labels = color_gradient)
+
+# Scatter plot for Murder vs UrbanPop, color by Assault
+plot(USArrests$UrbanPop, USArrests$Murder, col = color_assign, pch = 16, 
+     xlab = "Urban Population (%)", ylab = "Murder Arrests", 
+     main = "Murder Arrests vs Urban Population (Colored by Assault)")
+
+# Add color legend
+legend("topright", legend = c("Low Assault", "High Assault"), 
+       fill = c("blue", "red"), title = "Assault Rate")
+
+# c. Bar graph to show the murder rate for each state
+# Reset the plotting area to 1x1
+par(mfrow=c(1,1))
+
+# Bar plot for Murder Arrests by State
+barplot(USArrests$Murder, names.arg = rownames(USArrests), las = 2, col = "purple", 
+        main = "Murder Rate by State", ylab = "Murder Rate", cex.names = 0.7)
